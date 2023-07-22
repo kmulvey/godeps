@@ -4,8 +4,10 @@ go 1.20
 
 require (
 	github.com/go-git/go-git/v5 v5.8.0
+	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-github/v53 v53.2.0
 	github.com/stretchr/testify v1.4.0
+	golang.org/x/oauth2 v0.8.0
 )
 
 require (
@@ -30,7 +32,6 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
