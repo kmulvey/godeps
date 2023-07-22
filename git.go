@@ -6,7 +6,7 @@ import (
 )
 
 func createPrBranch(branchName string) error {
-	var repo, err = git.PlainClone("./", false, nil)
+	var repo, err = git.PlainOpen("./")
 	if err != nil {
 		return err
 	}
