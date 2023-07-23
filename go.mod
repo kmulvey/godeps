@@ -6,7 +6,7 @@ require (
 	github.com/go-git/go-git/v5 v5.8.0
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-github/v53 v53.2.0
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.8.4
 	golang.org/x/oauth2 v0.8.0
 )
 
@@ -36,5 +36,5 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
-	gopkg.in/yaml.v2 v2.2.4 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
