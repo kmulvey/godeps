@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 func createPrBranch(branchName string) error {
@@ -36,4 +40,32 @@ func createPrBranch(branchName string) error {
 	}
 
 	return nil
+}
+
+func commit(dep Dependency) error {
+	var repo, err = git.PlainOpen("./")
+	if err != nil {
+		return err
+	}
+
+	w, err := repo.Worktree()
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Add("go.mod")
+	if err != nil {
+		return err
+	}
+
+	commit, err := w.Commit(fmt.Sprintf("upgrade %s to %s", dep.Repo, dep.Version.String()), &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  "GoDep",
+			Email: "godep@godep.null",
+			When:  time.Now(),
+		},
+	})
+
+	_, err = repo.CommitObject(commit)
+	return err
 }
