@@ -8,7 +8,17 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func createPR(title, baseBranch, prBranch, owner, repo string, client *github.Client) (err error) {
+func newGithubClient(accessToken string) *github.Client {
+	var ctx = context.Background()
+	var ts = oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: accessToken},
+	)
+	var tc = oauth2.NewClient(ctx, ts)
+
+	return github.NewClient(tc)
+}
+
+func createPR(title, baseBranch, prBranch, owner, repo string, client *github.Client) error {
 
 	newPR := &github.NewPullRequest{
 		Title:               &title,
@@ -25,16 +35,6 @@ func createPR(title, baseBranch, prBranch, owner, repo string, client *github.Cl
 
 	fmt.Printf("PR created: %s\n", pr.GetHTMLURL())
 	return nil
-}
-
-func newGithubClient(accessToken string) *github.Client {
-	var ctx = context.Background()
-	var ts = oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: accessToken},
-	)
-	var tc = oauth2.NewClient(ctx, ts)
-
-	return github.NewClient(tc)
 }
 
 func getExistingPRs(client *github.Client, repoOwner, repo string) (map[string]struct{}, error) {
