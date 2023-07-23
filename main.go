@@ -10,35 +10,6 @@ import (
 	"time"
 )
 
-type Dependency struct {
-	Repo string
-	Version
-}
-
-func (d *Dependency) String() string {
-	return d.Repo + " " + d.Version.String()
-}
-
-type Version struct {
-	Major uint8
-	Minor uint8
-	Patch uint8
-	Date  time.Time
-	Sha   string
-}
-
-func (v *Version) String() string {
-	if v.Sha != "" {
-		return fmt.Sprintf("%d.%d.%d-%s-%s", v.Major, v.Minor, v.Patch, v.Date.Format("20060102150405"), v.Sha)
-	}
-	return fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
-}
-
-type Upgrade struct {
-	From Version
-	To   Version
-}
-
 // -   github.com/klauspost/compress v1.16.5 // indirect
 // -   golang.org/x/image v0.8.0
 // +   golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 // indirect
