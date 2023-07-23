@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -49,7 +48,7 @@ type Upgrade struct {
 
 var prefixRegex = regexp.MustCompile(`^[+|-]\s+`)
 
-func main() {
+func findNewVersions() (map[string]Upgrade, error) {
 
 	readFile, err := os.Open("./diff")
 	if err != nil {
@@ -62,6 +61,10 @@ func main() {
 
 	for fileScanner.Scan() {
 		var line = fileScanner.Text()
+		if strings.HasSuffix(line, "// indirect") {
+			return nil, err
+		}
+
 		var delete = strings.HasPrefix(line, "-")
 		var add = strings.HasPrefix(line, "+")
 
@@ -74,7 +77,7 @@ func main() {
 			var repo = prefixRegex.ReplaceAllString(dependency[0], "")
 			var ver, err = parseVersion(dependency[1])
 			if err != nil {
-				log.Fatal(err)
+				return nil, err
 			}
 
 			if exitsingVersion, exists := dependencies[repo]; exists {
@@ -100,7 +103,11 @@ func main() {
 		fmt.Printf("Bump %s from %s to %s \n", name, version.From.String(), version.To.String())
 	}
 
-	readFile.Close()
+	if err := readFile.Close(); err != nil {
+		return nil, err
+	}
+
+	return dependencies, err
 }
 
 func parseVersion(versionStr string) (Version, error) {
