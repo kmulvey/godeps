@@ -1,10 +1,5 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
-
 type Dependency struct {
 	Repo string
 	Version
@@ -12,21 +7,6 @@ type Dependency struct {
 
 func (d *Dependency) String() string {
 	return d.Repo + " " + d.Version.String()
-}
-
-type Version struct {
-	Major uint8
-	Minor uint8
-	Patch uint8
-	Date  time.Time
-	Sha   string
-}
-
-func (v *Version) String() string {
-	if v.Sha != "" {
-		return fmt.Sprintf("%d.%d.%d-%s-%s", v.Major, v.Minor, v.Patch, v.Date.Format("20060102150405"), v.Sha)
-	}
-	return fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
 }
 
 type Upgrade struct {

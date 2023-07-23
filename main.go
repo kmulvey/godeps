@@ -14,6 +14,21 @@ import (
 // -   golang.org/x/image v0.8.0
 // +   golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 // indirect
 
+type Version struct {
+	Major uint8
+	Minor uint8
+	Patch uint8
+	Date  time.Time
+	Sha   string
+}
+
+func (v *Version) String() string {
+	if v.Sha != "" {
+		return fmt.Sprintf("%d.%d.%d-%s-%s", v.Major, v.Minor, v.Patch, v.Date.Format("20060102150405"), v.Sha)
+	}
+	return fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
+}
+
 var prefixRegex = regexp.MustCompile(`^[+|-]\s+`)
 
 func findNewVersions() (map[string]Upgrade, error) {
