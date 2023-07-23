@@ -28,6 +28,11 @@ func backupOriginalGoMod() error {
 		return err
 	}
 
+	_, err = exec.Command("/bin/bash", "-c", "git checkout go.mod go.sum").Output()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
