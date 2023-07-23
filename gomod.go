@@ -2,7 +2,6 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"os/exec"
 	"strings"
 )
@@ -32,22 +31,19 @@ func backupOriginalGoMod() error {
 	return nil
 }
 
-func buildPatchedGoModFile() {
-	input, err := ioutil.ReadFile("myfile")
+func buildPatchedGoModFile(dep Dependency) error {
+	input, err := ioutil.ReadFile("go.mod")
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
 	lines := strings.Split(string(input), "\n")
 
 	for i, line := range lines {
-		if strings.Contains(line, "]") {
-			lines[i] = "LOL"
+		if strings.Contains(line, dep.Repo) {
+			lines[i] = dep.String()
 		}
 	}
 	output := strings.Join(lines, "\n")
-	err = ioutil.WriteFile("myfile", []byte(output), 0644)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	return ioutil.WriteFile("go.mod", []byte(output), 0644)
 }
