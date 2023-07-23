@@ -2,15 +2,12 @@ package main
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/google/go-github/v53/github"
 )
 
 type Dependency struct {
@@ -172,20 +169,4 @@ func (v *Version) IsNewer(versionTwo Version) bool {
 	}
 
 	return false
-}
-
-// client = github.NewTokenClient(ctx, "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")
-func getExistingPRs(client *github.Client, repoOwner, repo string) (map[string]struct{}, error) {
-
-	prs, _, err := client.PullRequests.List(context.Background(), repoOwner, repo, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var existingPRs = make(map[string]struct{})
-	for _, pr := range prs {
-		existingPRs[*pr.Title] = struct{}{}
-	}
-
-	return existingPRs, nil
 }

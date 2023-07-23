@@ -8,7 +8,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// createPR creates a pull request. Based on: https://godoc.org/github.com/google/go-github/github#example-PullRequestsService-Create
 func createPR(title, baseBranch, prBranch, owner, repo string, client *github.Client) (err error) {
 
 	newPR := &github.NewPullRequest{
@@ -38,17 +37,17 @@ func newGithubClient(accessToken string) *github.Client {
 	return github.NewClient(tc)
 }
 
-func getPRs(client *github.Client) ([]string, error) {
+func getExistingPRs(client *github.Client, repoOwner, repo string) (map[string]struct{}, error) {
 
-	var prs, _, err = client.PullRequests.List(context.Background(), "kmulvey", "text2speech", nil)
+	prs, _, err := client.PullRequests.List(context.Background(), repoOwner, repo, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var prTitles = make([]string, len(prs))
-	for i, pr := range prs {
-		prTitles[i] = *pr.Title
+	var existingPRs = make(map[string]struct{})
+	for _, pr := range prs {
+		existingPRs[*pr.Title] = struct{}{}
 	}
 
-	return prTitles, nil
+	return existingPRs, nil
 }
