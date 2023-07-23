@@ -5,11 +5,11 @@
 - [x] go mod tidy
 - [x] git diff go.mod
 - [x] parse diff
-- [ ] iterate over changes
-  - [ ] check if there is an existing PR
-  - [ ] if not
-    - [ ] create new branch
-    - [ ] patch the single line
-    - [ ] commit
-    - [ ] push
-    - [ ] create new PR
+- [x] iterate over changes
+  - [x] check if there is an existing PR
+  - [x] if not
+    - [x] create new branch
+    - [x] patch the single line
+    - [x] commit
+    - [x] push
+    - [x] create new PR
