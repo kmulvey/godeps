@@ -14,7 +14,7 @@ type Dependency struct {
 }
 
 func (d *Dependency) String() string {
-	return d.Repo + " " + d.Version.String()
+	return d.Repo + " v" + d.Version.String()
 }
 
 type Upgrade struct {
