@@ -1,7 +1,7 @@
 package godeps
 
 import (
-	"io/ioutil"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -37,7 +37,7 @@ func backupOriginalGoMod() error {
 }
 
 func buildPatchedGoModFile(dep Dependency) error {
-	input, err := ioutil.ReadFile("go.mod.original")
+	input, err := os.ReadFile("go.mod.original")
 	if err != nil {
 		return err
 	}
@@ -50,5 +50,5 @@ func buildPatchedGoModFile(dep Dependency) error {
 		}
 	}
 	output := strings.Join(lines, "\n")
-	return ioutil.WriteFile("go.mod", []byte(output), 0644)
+	return os.WriteFile("go.mod", []byte(output), 0644)
 }
