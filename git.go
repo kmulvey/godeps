@@ -71,6 +71,9 @@ func commitAndPush(dep Dependency) error {
 			When:  time.Now(),
 		},
 	})
+	if err != nil {
+		return err
+	}
 
 	_, err = repo.CommitObject(commit)
 	if err != nil {
