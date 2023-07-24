@@ -44,14 +44,14 @@ func Run(owner, repo, githubToken string) error {
 		return nil
 	}
 
-	for repo, upgrade := range upgrades {
+	for depRepo, upgrade := range upgrades {
 
-		var prTitle = fmt.Sprintf("Bump %s from %s to %s", repo, &upgrade.From, &upgrade.To)
+		var prTitle = fmt.Sprintf("Bump %s from %s to %s", depRepo, &upgrade.From, &upgrade.To)
 		if _, exists := existingPrs[prTitle]; exists {
 			continue
 		}
 
-		err = createUpgradePR(repo, owner, upgrade, githubClient)
+		err = createUpgradePR(depRepo, repo, owner, upgrade, githubClient)
 		if err != nil {
 			return nil
 		}
@@ -60,12 +60,12 @@ func Run(owner, repo, githubToken string) error {
 	return nil
 }
 
-func createUpgradePR(repo, owner string, upgrade Upgrade, githubClient *github.Client) error {
+func createUpgradePR(depRepo, thisRepo, owner string, upgrade Upgrade, githubClient *github.Client) error {
 
-	var prTitle = fmt.Sprintf("Bump %s from %s to %s", repo, &upgrade.From, &upgrade.To)
-	var prBranch = fmt.Sprintf("bump-%s-from-%s-to-%s", repo, &upgrade.From, &upgrade.To)
+	var prTitle = fmt.Sprintf("Bump %s from %s to %s", depRepo, &upgrade.From, &upgrade.To)
+	var prBranch = fmt.Sprintf("bump-%s-from-%s-to-%s", depRepo, &upgrade.From, &upgrade.To)
 	prBranch = strings.ReplaceAll(prBranch, "/", "-")
-	var newDep = Dependency{Repo: repo, Version: upgrade.To}
+	var newDep = Dependency{Repo: depRepo, Version: upgrade.To}
 
 	if err := createPrBranch(prBranch); err != nil {
 		return nil
@@ -83,7 +83,7 @@ func createUpgradePR(repo, owner string, upgrade Upgrade, githubClient *github.C
 		return err
 	}
 
-	if err := createPR(prTitle, "main", prBranch, owner, repo, githubClient); err != nil {
+	if err := createPR(prTitle, "main", prBranch, owner, thisRepo, githubClient); err != nil {
 		return err
 	}
 
