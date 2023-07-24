@@ -45,7 +45,7 @@ func findNewVersions() (map[string]Upgrade, error) {
 	for fileScanner.Scan() {
 		var line = fileScanner.Text()
 		if strings.HasSuffix(line, "// indirect") {
-			return nil, err
+			continue
 		}
 
 		var delete = strings.HasPrefix(line, "-")
