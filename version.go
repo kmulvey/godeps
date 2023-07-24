@@ -81,11 +81,6 @@ func findNewVersions() (map[string]Upgrade, error) {
 		}
 	}
 
-	for name, version := range dependencies {
-		// fmt.Printf("%s: from: %+v -> to: %+v \n", name, version.From, version.To)
-		fmt.Printf("Bump %s from %s to %s \n", name, version.From.String(), version.To.String())
-	}
-
 	if err := readFile.Close(); err != nil {
 		return nil, err
 	}

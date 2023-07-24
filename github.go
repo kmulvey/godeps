@@ -2,7 +2,6 @@ package godeps
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/go-github/v53/github"
 	"golang.org/x/oauth2"
@@ -28,12 +27,11 @@ func createPR(title, baseBranch, prBranch, owner, repo string, client *github.Cl
 		MaintainerCanModify: github.Bool(true),
 	}
 
-	pr, _, err := client.PullRequests.Create(context.Background(), owner, repo, newPR)
+	_, _, err := client.PullRequests.Create(context.Background(), owner, repo, newPR)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("PR created: %s\n", pr.GetHTMLURL())
 	return nil
 }
 
