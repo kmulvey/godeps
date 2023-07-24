@@ -46,7 +46,7 @@ func buildPatchedGoModFile(dep Dependency) error {
 
 	for i, line := range lines {
 		if strings.Contains(line, dep.Repo) {
-			lines[i] = dep.String()
+			lines[i] = "\t" + dep.String()
 		}
 	}
 	output := strings.Join(lines, "\n")
