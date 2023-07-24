@@ -67,11 +67,11 @@ func createUpgradePR(depRepo, thisRepo, owner string, upgrade Upgrade, githubCli
 	prBranch = strings.ReplaceAll(prBranch, "/", "-")
 	var newDep = Dependency{Repo: depRepo, Version: upgrade.To}
 
-	if err := createPrBranch(prBranch); err != nil {
+	if err := buildPatchedGoModFile(newDep); err != nil {
 		return nil
 	}
 
-	if err := buildPatchedGoModFile(newDep); err != nil {
+	if err := createPrBranch(prBranch); err != nil {
 		return nil
 	}
 
