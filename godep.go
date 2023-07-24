@@ -28,12 +28,12 @@ func Run(owner, repo, githubToken string) error {
 
 	var err = backupOriginalGoMod()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	upgrades, err := findNewVersions()
 	if err != nil {
-		return nil
+		return err
 	}
 	if len(upgrades) == 0 {
 		return nil
@@ -41,7 +41,7 @@ func Run(owner, repo, githubToken string) error {
 
 	existingPrs, err := getExistingPRs(githubClient, owner, repo)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	for depRepo, upgrade := range upgrades {
@@ -53,7 +53,7 @@ func Run(owner, repo, githubToken string) error {
 
 		err = createUpgradePR(depRepo, repo, owner, upgrade, githubClient)
 		if err != nil {
-			return nil
+			return err
 		}
 	}
 
@@ -68,11 +68,11 @@ func createUpgradePR(depRepo, thisRepo, owner string, upgrade Upgrade, githubCli
 	var newDep = Dependency{Repo: depRepo, Version: upgrade.To}
 
 	if err := createPrBranch(prBranch); err != nil {
-		return nil
+		return err
 	}
 
 	if err := buildPatchedGoModFile(newDep); err != nil {
-		return nil
+		return err
 	}
 
 	if _, err := exec.Command("/bin/bash", "-c", "go mod tidy").Output(); err != nil {
