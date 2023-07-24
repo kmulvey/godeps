@@ -37,7 +37,7 @@ func backupOriginalGoMod() error {
 }
 
 func buildPatchedGoModFile(dep Dependency) error {
-	input, err := ioutil.ReadFile("go.mod")
+	input, err := ioutil.ReadFile("go.mod.original")
 	if err != nil {
 		return err
 	}
