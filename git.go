@@ -35,6 +35,7 @@ func createPrBranch(branchName string) error {
 
 	if err := w.Checkout(&git.CheckoutOptions{
 		Branch: prBrnach,
+		Keep:   true,
 	}); err != nil {
 		return err
 	}
