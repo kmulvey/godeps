@@ -9,7 +9,8 @@ inputs:
 
 runs:
   using: 'composite'
-  env: GITHUB_TOKEN: ${{ github.token }}
+  env: 
+    GITHUB_TOKEN: ${{ github.token }}
   steps:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
