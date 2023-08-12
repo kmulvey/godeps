@@ -43,4 +43,4 @@ jobs:
         uses: kmulvey/govulncheck-action@v1.1.2
 
       - name: godeps
-        uses: kmulvey/godeps@v0.2.1
+        uses: kmulvey/godeps@v0.2.2
