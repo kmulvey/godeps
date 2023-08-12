@@ -76,11 +76,11 @@ func createUpgradePR(depRepo, thisRepo, owner string, upgrade Upgrade, githubCli
 	}
 
 	if _, err := exec.Command("/bin/bash", "-c", "go mod tidy").Output(); err != nil {
-		return fmt.Errorf("createUpgradePR: %w", err)
+		return fmt.Errorf("go mod tidy: %w", err)
 	}
 
 	if err := commitAndPush(newDep); err != nil {
-		return fmt.Errorf("go mod tidy: %w", err)
+		return fmt.Errorf("commitAndPush: %w", err)
 	}
 
 	if err := createPR(prTitle, "main", prBranch, owner, thisRepo, githubClient); err != nil {

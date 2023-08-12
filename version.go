@@ -33,11 +33,11 @@ var prefixRegex = regexp.MustCompile(`^[+|-]\s+`)
 
 func findNewVersions() (map[string]Upgrade, error) {
 
-	readFile, err := os.Open("./diff")
+	diffFile, err := os.Open("./diff")
 	if err != nil {
-		fmt.Println(err)
+		return nil, fmt.Errorf("open ./diff: %w", err)
 	}
-	fileScanner := bufio.NewScanner(readFile)
+	fileScanner := bufio.NewScanner(diffFile)
 	fileScanner.Split(bufio.ScanLines)
 
 	var dependencies = make(map[string]Upgrade)
@@ -60,7 +60,7 @@ func findNewVersions() (map[string]Upgrade, error) {
 			var repo = prefixRegex.ReplaceAllString(dependency[0], "")
 			var ver, err = parseVersion(dependency[1])
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("parseVersion: %w", err)
 			}
 
 			if exitsingVersion, exists := dependencies[repo]; exists {
@@ -81,11 +81,11 @@ func findNewVersions() (map[string]Upgrade, error) {
 		}
 	}
 
-	if err := readFile.Close(); err != nil {
-		return nil, err
+	if err := diffFile.Close(); err != nil {
+		return nil, fmt.Errorf("diffFile.Close(): %w", err)
 	}
 
-	return dependencies, err
+	return dependencies, nil
 }
 
 func parseVersion(versionStr string) (Version, error) {
@@ -100,13 +100,13 @@ func parseVersion(versionStr string) (Version, error) {
 
 	var num, err = strconv.Atoi(string(verArr[0]))
 	if err != nil {
-		return Version{}, err
+		return Version{}, fmt.Errorf("atoi: %s, err: %w", string(verArr[0]), err)
 	}
 	v.Major = uint8(num)
 
 	num, err = strconv.Atoi(string(verArr[1]))
 	if err != nil {
-		return Version{}, err
+		return Version{}, fmt.Errorf("atoi: %s, err: %w", string(verArr[1]), err)
 	}
 	v.Minor = uint8(num)
 
@@ -116,13 +116,13 @@ func parseVersion(versionStr string) (Version, error) {
 		var patchArr = strings.Split(string(verArr[2]), "-")
 		num, err = strconv.Atoi(patchArr[0])
 		if err != nil {
-			return Version{}, err
+			return Version{}, fmt.Errorf("atoi: %s, err: %w", string(patchArr[0]), err)
 		}
 		v.Patch = uint8(num)
 
 		v.Date, err = time.Parse("20060102150405", patchArr[1])
 		if err != nil {
-			return Version{}, err
+			return Version{}, fmt.Errorf("time.parse: %s, err: %w", string(patchArr[1]), err)
 		}
 
 		v.Sha = patchArr[2]
@@ -130,7 +130,7 @@ func parseVersion(versionStr string) (Version, error) {
 		var patchArr = strings.Split(string(verArr[2]), "-")
 		num, err = strconv.Atoi(patchArr[0])
 		if err != nil {
-			return Version{}, err
+			return Version{}, fmt.Errorf("atoi: %s, err: %w", string(patchArr[0]), err)
 		}
 		v.Patch = uint8(num)
 	}
