@@ -28,12 +28,12 @@ func Run(owner, repo, githubToken string) error {
 
 	var err = backupOriginalGoMod()
 	if err != nil {
-		return err
+		return fmt.Errorf("backupOriginalGoMod: %w", err)
 	}
 
 	upgrades, err := findNewVersions()
 	if err != nil {
-		return err
+		return fmt.Errorf("findNewVersions: %w", err)
 	}
 	if len(upgrades) == 0 {
 		return nil
@@ -41,7 +41,7 @@ func Run(owner, repo, githubToken string) error {
 
 	existingPrs, err := getExistingPRs(githubClient, owner, repo)
 	if err != nil {
-		return err
+		return fmt.Errorf("getExistingPRs: %w", err)
 	}
 
 	for depRepo, upgrade := range upgrades {
@@ -53,7 +53,7 @@ func Run(owner, repo, githubToken string) error {
 
 		err = createUpgradePR(depRepo, repo, owner, upgrade, githubClient)
 		if err != nil {
-			return err
+			return fmt.Errorf("createUpgradePR: %w", err)
 		}
 	}
 
@@ -68,23 +68,23 @@ func createUpgradePR(depRepo, thisRepo, owner string, upgrade Upgrade, githubCli
 	var newDep = Dependency{Repo: depRepo, Version: upgrade.To}
 
 	if err := createPrBranch(prBranch); err != nil {
-		return err
+		return fmt.Errorf("createPrBranch: %w", err)
 	}
 
 	if err := buildPatchedGoModFile(newDep); err != nil {
-		return err
+		return fmt.Errorf("buildPatchedGoModFile: %w", err)
 	}
 
 	if _, err := exec.Command("/bin/bash", "-c", "go mod tidy").Output(); err != nil {
-		return err
+		return fmt.Errorf("createUpgradePR: %w", err)
 	}
 
 	if err := commitAndPush(newDep); err != nil {
-		return err
+		return fmt.Errorf("go mod tidy: %w", err)
 	}
 
 	if err := createPR(prTitle, "main", prBranch, owner, thisRepo, githubClient); err != nil {
-		return err
+		return fmt.Errorf("createPR: %w", err)
 	}
 
 	return nil
