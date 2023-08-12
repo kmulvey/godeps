@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"strings"
 
@@ -28,6 +29,10 @@ func main() {
 	}
 
 	githubToken = os.Getenv("GITHUB_TOKEN")
+
+	fmt.Printf("token: %s \n", githubToken)
+	fmt.Printf("owner: %s \n", owner)
+	fmt.Printf("repo: %s \n", repo)
 
 	var err = godeps.Run(owner, repo, githubToken)
 	if err != nil {
