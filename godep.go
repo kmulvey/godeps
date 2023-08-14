@@ -1,7 +1,9 @@
 package godeps
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os/exec"
 	"strings"
 
@@ -60,15 +62,25 @@ func Run(owner, repo, githubToken string) error {
 	return nil
 }
 
-func createUpgradePR(depRepo, thisRepo, owner string, upgrade Upgrade, githubClient *github.Client) error {
+func createUpgradePR(depRepo, thisRepo, repoOwner string, upgrade Upgrade, githubClient *github.Client) error {
 
+	var ctx = context.Background()
 	var prTitle = fmt.Sprintf("Bump %s from %s to %s", depRepo, &upgrade.From, &upgrade.To)
 	var prBranch = fmt.Sprintf("bump-%s-from-%s-to-%s", depRepo, &upgrade.From, &upgrade.To)
 	prBranch = strings.ReplaceAll(prBranch, "/", "-")
 	var newDep = Dependency{Repo: depRepo, Version: upgrade.To}
 
-	if err := createPrBranch(prBranch); err != nil {
-		return fmt.Errorf("createPrBranch: %w", err)
+	var mainBranch, err = getMainBranch(ctx, githubClient, repoOwner, thisRepo)
+	if err != nil {
+		log.Fatalf("Unable to main branch: %s\n", err)
+	}
+
+	ref, err := getRef(ctx, githubClient, prBranch, mainBranch, repoOwner, thisRepo)
+	if err != nil {
+		log.Fatalf("Unable to get/create the commit reference: %s\n", err)
+	}
+	if ref == nil {
+		log.Fatalf("No error where returned but the reference is nil")
 	}
 
 	if err := buildPatchedGoModFile(newDep); err != nil {
@@ -79,12 +91,17 @@ func createUpgradePR(depRepo, thisRepo, owner string, upgrade Upgrade, githubCli
 		return fmt.Errorf("go mod tidy: %w", err)
 	}
 
-	if err := commitAndPush(newDep); err != nil {
-		return fmt.Errorf("commitAndPush: %w", err)
+	tree, err := getTree(ctx, githubClient, ref, repoOwner, thisRepo)
+	if err != nil {
+		log.Fatalf("Unable to create the tree based on the provided files: %s\n", err)
 	}
 
-	if err := createPR(prTitle, "main", prBranch, owner, thisRepo, githubClient); err != nil {
-		return fmt.Errorf("createPR: %w", err)
+	if err := pushCommit(ctx, githubClient, ref, tree, newDep, repoOwner, thisRepo); err != nil {
+		log.Fatalf("Unable to create the commit: %s\n", err)
+	}
+
+	if err := createPR(ctx, githubClient, thisRepo, repoOwner, prBranch, mainBranch, prTitle, ""); err != nil { // fill description
+		log.Fatalf("Error while creating the pull request: %s", err)
 	}
 
 	return nil
