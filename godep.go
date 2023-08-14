@@ -77,10 +77,10 @@ func createUpgradePR(depRepo, thisRepo, repoOwner string, upgrade Upgrade, githu
 
 	ref, err := getRef(ctx, githubClient, prBranch, mainBranch, repoOwner, thisRepo)
 	if err != nil {
-		log.Fatalf("Unable to get/create the commit reference: %s\n", err)
+		return fmt.Errorf("unable to get/create the commit reference: %w", err)
 	}
 	if ref == nil {
-		log.Fatalf("No error where returned but the reference is nil")
+		return fmt.Errorf("no error where returned but the reference is nil")
 	}
 
 	if err := buildPatchedGoModFile(newDep); err != nil {
@@ -93,15 +93,15 @@ func createUpgradePR(depRepo, thisRepo, repoOwner string, upgrade Upgrade, githu
 
 	tree, err := getTree(ctx, githubClient, ref, repoOwner, thisRepo)
 	if err != nil {
-		log.Fatalf("Unable to create the tree based on the provided files: %s\n", err)
+		return fmt.Errorf("unable to create the tree based on the provided files: %w", err)
 	}
 
 	if err := pushCommit(ctx, githubClient, ref, tree, newDep, repoOwner, thisRepo); err != nil {
-		log.Fatalf("Unable to create the commit: %s\n", err)
+		return fmt.Errorf("unable to create the commit: %w", err)
 	}
 
 	if err := createPR(ctx, githubClient, thisRepo, repoOwner, prBranch, mainBranch, prTitle, ""); err != nil { // fill description
-		log.Fatalf("Error while creating the pull request: %s", err)
+		return fmt.Errorf("error while creating the pull request: %w", err)
 	}
 
 	return nil
