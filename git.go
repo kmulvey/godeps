@@ -66,19 +66,21 @@ func getRef(ctx context.Context, client *github.Client, prBranch, mainBranch, re
 // of the ref you got in getRef.
 func getTree(ctx context.Context, client *github.Client, ref *github.Reference, repoOwner, repoName string) (tree *github.Tree, err error) {
 	// Create a tree with what to commit.
-	var entries = make([]*github.TreeEntry, 1)
+	var entries = make([]*github.TreeEntry, 2)
 
 	// Load each file into the tree.
-	file, content, err := getFileContent("commitfile")
-	if err != nil {
-		return nil, err
-	}
-	entries[0] = &github.TreeEntry{
-		Path:    github.String(file),
-		Type:    github.String("blob"),
-		Content: github.String(string(content)),
-		Mode:    github.String("100644"),
-		Size:    github.Int(len(content)),
+	for i, file := range []string{"go.mod", "go.sum"} {
+		file, content, err := getFileContent(file)
+		if err != nil {
+			return nil, err
+		}
+		entries[i] = &github.TreeEntry{
+			Path:    github.String(file),
+			Type:    github.String("blob"),
+			Content: github.String(string(content)),
+			Mode:    github.String("100644"),
+			Size:    github.Int(len(content)),
+		}
 	}
 
 	tree, _, err = client.Git.CreateTree(ctx, repoOwner, repoName, *ref.Object.SHA, entries)
